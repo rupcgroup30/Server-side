@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32929.385
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "airbnbClientSide", ".", "{DEA752E5-BE6E-4C3B-8FE9-183EB936D0C3}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.8.1"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_55181"
+		Debug.AspNetCompiler.PhysicalPath = "..\airbnbClientSide\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_55181\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_55181"
+		Release.AspNetCompiler.PhysicalPath = "..\airbnbClientSide\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_55181\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "55181"
+		SlnRelativePath = "..\airbnbClientSide\"
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DEA752E5-BE6E-4C3B-8FE9-183EB936D0C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEA752E5-BE6E-4C3B-8FE9-183EB936D0C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {303EF601-60E3-4353-A99C-F6FABD9261AD}
+	EndGlobalSection
+EndGlobal

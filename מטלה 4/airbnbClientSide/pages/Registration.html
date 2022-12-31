@@ -1,0 +1,184 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>User Registration</title>
+    <link href="../css/RegistrationStyleSheet.css" rel="stylesheet" />
+    <link href="../css/StyleSheet.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"
+            integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
+            crossorigin="anonymous"></script>
+
+    <script src="../js/ajaxCalls.js"></script>
+
+    <script>
+
+        $(document).ready(function () {
+
+            show();   
+        })
+
+        function show() {
+            document.getElementById("ph").innerHTML = '<button type="button" class="btn" onclick="postUser()">Login</button>';
+            if (sessionStorage.getItem("User") != undefined) {
+                document.getElementById('ph2').innerHTML = '<a style="text-align:center" onclick="showUpdate()">Update Details</a>';
+            }
+            else {
+                str = '<h1 id="welcome"><span>Registration</span></h1>';
+                str += '<p><span>Register in order to order a vacation</span></p>';
+                document.getElementById('page-Title').innerHTML = str;
+            }
+        }
+
+        function showUpdate() {
+            document.getElementById('page-Title').innerHTML = '<h1 id="welcome"><span>Update Details</span></h1>';
+            document.getElementById("ph").innerHTML = '<button type="button" class="btn" onclick="updateUser()">Update</button>';
+            var ssUser = JSON.parse(sessionStorage.getItem("User"));
+            $('#email').val(ssUser.email);
+        }
+
+        function postUser() {
+            var user = CreateUser();
+            if (location.hostname == "localhost") {
+                api = "https://localhost:7041/api/Users";
+            }
+            else {
+                api = "https://proj.ruppin.ac.il/cgroup30/test2/tar1/api/Users";
+            }
+            ajaxCall("POST", api, JSON.stringify(user), postSCB, postECB);
+
+        }
+
+        function CreateUser() {
+            var FirstName = $('#firstName').val();
+            var LastName = $('#lastName').val();
+            var Email = $('#email').val();
+            var Password = $('#password').val();
+
+            var user = {
+                firstName: FirstName,
+                lastName: LastName,
+                email: Email,
+                password: Password
+            }
+            return user;
+        }
+
+        function postSCB(data) {
+            console.log(data);
+            var user = CreateUser();
+            $('#firstName').val('');
+            $('#lastName').val('');
+            $("#email").val('');
+            $("#password").val('');
+            if (data == 1) {
+                sessionStorage.setItem("User", JSON.stringify(user));
+                show();
+            }
+            else
+                alert("An error occured, user not added");
+        }
+
+        function postECB(err) {
+            alert("An error occured, user not added");
+            $('#firstName').val('');
+            $('#lastName').val('');
+            $("#email").val('');
+            $("#password").val('');
+        }
+
+        function updateUser() {
+            var user = CreateUser();
+            ajaxCall("PUT", api, JSON.stringify(user), putSCB, putECB);
+        }
+
+        function putSCB(data) {
+            console.log(data);
+            var user = CreateUser();
+            $('#firstName').val('');
+            $('#lastName').val('');
+            $("#email").val('');
+            $("#password").val('');
+            if (data == 1) {
+                sessionStorage.setItem("User", JSON.stringify(user));
+                showUpdate();
+            }
+            else
+                alert("An error occured, user not added");
+        }
+
+
+        function putECB(err) {
+            alert("An error occured, user not added");
+            $('#firstName').val('');
+            $('#lastName').val('');
+            $("#email").val('');
+            $("#password").val('');
+        }
+
+
+    </script>
+
+</head>
+<body>
+    <section>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="headerBackground col col-12">
+                    <div class='headerBackground'>
+                        <a href="flats.html"><i class='material-icons' style='color: #FF385C; margin:15px; float:right; background-color: white'>home</i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="heading" id="welcome-headline">
+        <div>
+            <p></p>
+        </div>
+        <div id="page-Title">
+
+        </div>
+    </div>
+
+    <div class="hero-wrep">
+    </div>
+
+    <div>
+        <p></p>
+    </div>
+
+    <form>
+        <!-- First name field -->
+        <label for="firstName">First Name:</label><br>
+        <input type="text" id="firstName" name="firstName" required><br>
+        <!-- Last name field -->
+        <label for="lastName">Last Name:</label><br>
+        <input type="text" id="lastName" name="lastName" required><br>
+        <!-- Email field -->
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email" required><br>
+        <!-- Password field -->
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password" required><br>
+        <!-- Submit button -->
+        <div id="ph">
+
+        </div>
+
+
+    </form>
+    <br />
+    <div id="ph2">
+
+    </div>
+    <div>
+        <p></p>
+    </div>
+</body>
+</html>

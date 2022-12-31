@@ -1,0 +1,177 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+
+    <title></title>
+
+    <link href="../css/StyleSheet.css" rel="stylesheet" />
+
+    <link href="../css/RegistrationStyleSheet.css" rel="stylesheet" />
+    <!-- font awesome cdn link  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"
+            integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
+            crossorigin="anonymous"></script>
+
+    <script src="../js/ajaxCalls.js"></script>
+
+
+    <script>
+
+        var vacations = new Array();
+        var startDate;
+        var endDate;
+        flatid = parseInt(sessionStorage.getItem("FlatId"));
+        ssUser = JSON.parse(sessionStorage.getItem("User"));
+        userEmail = ssUser.email;
+
+        $(document).ready(function () {
+
+            getVacations();
+
+            $("#pForm").submit(f1);
+
+        })
+
+        function f1() {
+            postVacation();
+            return false;
+        }
+
+        function postVacation() {
+            var flatId = flatid;
+            const userId = userEmail;
+            const startDate = $("#Start").val();
+            const endDate = $("#End").val();
+
+            const vacation = {
+                UserId: userId,
+                FlatId: flatId,
+                StartDate: startDate,
+                EndDate: endDate
+            }
+
+            ajaxCall("POST", api, JSON.stringify(vacation), postSCB, postECB);
+
+        }
+
+        function postSCB(data) {
+            $("#Start").val('');
+            $("#End").val('');
+            if (data == 1) {
+                getVacations();
+                location.reload();
+            }                
+            else
+                alert("Vacation not added");
+        }
+
+        function postECB(err) {
+            $("#Start").val('');
+            $("#End").val('');
+            alert("Vacation not added");
+        }
+
+        function getVacations() {
+            if (location.hostname == "localhost") {
+                api = "https://localhost:7041/api/Vacations/";
+            }
+            else {
+                api = 'https://proj.ruppin.ac.il/cgroup30/test2/tar1/api/Vacations/';
+            }
+            ajaxCall("GET", api, "" , getSCB, getECB);
+        }
+
+        function getSCB(data) {
+            console.log(data);
+            vacations = data;
+            console.log(vacations);
+            document.getElementById("ph").innerHTML = '';
+            for (var i = 0; i < vacations.length; i++) {
+                vacations[i].show = Show;
+                vacations[i].show();
+            }
+        }
+
+        function getECB(err) {
+            console.log(err);
+        }
+
+        function Show() {
+            str = '<div class="box">'
+            str += '<div class="content">'
+            str += '<div class="price">'
+            str += '<h3> Vacation To Flat Number ' + this.flatId + '</h3>'
+            str += '</div>'
+            str += '<div class="location">'
+            str += '<p> ' + this.startDate + ' ' + this.endDate + ' </p>'
+            str += '</div>'
+            str += '<div class="details">'
+            str += '<h3>User Id: ' + this.userId + '</h3>'
+            str += '</div>'
+            str += '</div>'
+            str += '</div>'
+            document.getElementById("ph").innerHTML += str;
+        }
+
+
+    </script>
+
+</head>
+<body>
+
+    <section>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="headerBackground col col-12">
+                    <div class='headerBackground'>
+                        <a href="flats.html"><i class='material-icons' style='color: #FF385C; margin:15px; float:right; background-color: white'>home</i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="heading" id="welcome-headline">
+        <h1 id="welcome"><span>Welcome!</span></h1>
+        <p><span>Here you can post and view any vacations you you want</span></p>
+    </div>
+
+    <div class="hero-wrep">
+    </div>
+
+    <div>
+        <p></p>
+    </div>
+
+    <div id="headerPost">
+        <form id="pForm">
+            <div class="main">
+                <div class="main">
+                    <h4><label><b>Start Date</b></label></h4>
+                    <input type="date" id="Start" name="date" required>
+                </div>
+                <div class="main">
+                    <h4><label><b>End Date</b></label></h4>
+                    <input type="date" id="End" name="date" required>
+                </div>
+                <div>
+                    <div class="main">
+                        <input id="postVacaiBTN" type="submit" class="button" value="Post The Vacation" />
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <section class="featured" id="featured">
+        <h1 class="heading">Your Vacations</h1>
+        <div class="box-container" id="ph">
+        </div>
+    </section>
+
+</body>
+</html>

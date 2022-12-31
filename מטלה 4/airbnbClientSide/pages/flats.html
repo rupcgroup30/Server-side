@@ -1,0 +1,308 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+
+    <title></title>
+
+    <link href="../css/StyleSheet.css" rel="stylesheet" />
+
+    <link href="../css/RegistrationStyleSheet.css" rel="stylesheet" />
+    <!-- font awesome cdn link  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"
+            integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
+            crossorigin="anonymous"></script>
+
+    <script src="../js/ajaxCalls.js"></script>
+
+
+    <script>
+
+        var flats = new Array();
+
+        $(document).ready(function () {
+
+            if (sessionStorage.getItem("User") != undefined)
+                var user = sessionStorage.getItem("User");
+
+            getFlats();
+
+            $("#pForm").submit(f1);
+
+
+        })
+
+        function f1() {
+            postFlat();
+            return false;
+
+        }
+
+        function postFlat() {
+            const city = $("#cityCB").val();
+            const address = $("#addressTB").val();
+            const numberOfRooms = $("#numberOfRoomsTB").val();
+            const price = $("#priceTB").val();
+
+            const flat = {
+                City: city,
+                Address: address,
+                NumberOfRooms: numberOfRooms,
+                Price: price
+            }
+
+            ajaxCall("POST", api, JSON.stringify(flat), postSCB, postECB);
+
+        }
+
+        function postSCB(data) {
+            $("#cityCB").val('');
+            $("#addressTB").val('');
+            $("#numberOfRoomsTB").val('');
+            $("#priceTB").val('');
+            if (data == 1) {
+                getFlats();
+                location.reload();
+            }
+            else
+                alert("Flat not added");
+        }
+
+        function postECB(err) {
+            alert("Flat not added");
+            $("#cityCB").val('');
+            $("#addressTB").val('');
+            $("#numberOfRoomsTB").val('');
+            $("#priceTB").val('');
+
+        }
+
+        function getFlats() {
+
+            if (location.hostname == "localhost") {
+                api = "https://localhost:7041/api/Flats";
+            }
+            else {
+                api = 'https://proj.ruppin.ac.il/cgroup30/test2/tar1/api/Flats';
+            }
+            ajaxCall("GET", api, "", getSCB, getECB);
+        }
+
+        function getSCB(data) {
+            console.log(data);
+            flats = data;
+            console.log(flats);
+            document.getElementById("ph").innerHTML = '';
+            for (var i = 0; i < flats.length; i++) {
+                flats[i].show = Show;
+                flats[i].show();
+            }
+        }
+
+        function getECB(err) {
+            console.log(err);
+        }
+
+        function Show() {
+            var str = ''
+            str += '<div class="box">'
+            str += '<div class="content">'
+            str += '<div class="price">'
+            str += '<h3> Price:' + this.price + '$</h3>'
+            str += '</div>'
+            str += '<div class="location">'
+            str += '<h4> City: ' + this.city + '</h4>'
+            str += '<p>Address: ' + this.address + '</p>'
+            str += '</div>'
+            str += '<div class="details">'
+            str += '<h3> <i class="fas fa-bed"></i>  Number of rooms: ' + this.numberOfRooms + ' rooms </h3>'
+            str += '</div>'
+            str += '<div class="buttons">'
+            if (sessionStorage.getItem("User") == undefined)
+                str += '<a id="login" type="button" class="btn" data-toggle="modal" data-target="#myModal" onclick="ShowLoginModal()">Order Vacati</a>'
+            else
+                str += '<a id="bookVacation' + this.id + '" type="button" class="btn" onclick="OrderFlat(' + this.id + ')">Order Vacation</a>'
+            str += '</div>'
+            str += '</div>'
+            str += '</div>'
+            document.getElementById("ph").innerHTML += str;
+        }
+
+        function ShowLoginModal(id) {
+            var modal = document.getElementById("myModal");
+            modal.style.display = "block";
+            str = "<div>"
+            str += '<div data-validate="Valid user Email is required">'
+            str += "<p><b>Email</b></p>"
+            str += '<input type="email" id="your_Email" name="userEmail" required>'
+            str += '</div>'
+            str += '<div data-validate="Valid user Password is required">'
+            str += "<p><b>Password</b></p>"
+            str += '<input type="password" id="your_pass" name="userPassword" required>'
+            str += '</div>'
+            str += '</div>'
+            document.getElementById("ph4").innerHTML = str;
+            email = $("#your_Email").val();
+            pass = $("#your_pass").val();
+            str = '<a id="insertUser" type="button" class="btn" onclick="CheckUser()">Login</a>';
+            str += '<br />'
+            str += '<a href="Registration.html"> Not A Member </a>'
+            document.getElementById("ph5").innerHTML = str;
+
+        }
+
+        function CloseModal() {
+            var modal = document.getElementById("myModal");
+            modal.style.display = "none";
+            location.reload();
+        }
+
+        function CheckUser() {
+            var email = $("#your_Email").val();
+            var password = $("#your_pass").val();
+            if (location.hostname == "localhost") {
+                api = "https://localhost:7041/api/Users?email=" + email + "&password=" + password + "";
+            }
+            else {
+                api = "https://proj.ruppin.ac.il/cgroup30/test2/tar1/api/Users" + email + "&password=" + password + "";
+            }
+            ajaxCall("GET", api, "", getUserSCB, getUserECB);
+        }
+
+        function getUserSCB(data) {
+            if (data[0] != undefined) {
+                console.log(data[0]);
+                var user = {
+                    email: data[0].email,
+                    password: data[0].password,
+                    firstName: data[0].firstName,
+                    lastName: data[0].lastName
+                };
+                sessionStorage.setItem("User", JSON.stringify(user));
+                CloseModal();
+            }
+            else {
+                alert("User not found, Please Register");
+                $("#your_Email").val('');
+                $("#your_pass").val('');
+            }
+        }
+
+        function getUserECB(err) {
+            console.log(err);
+        }
+
+        function OrderFlat(id) {
+            sessionStorage.setItem("FlatId", id);
+            window.location.replace("vacations.html");
+        }
+
+    </script>
+
+</head>
+<body>
+
+    <section>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="headerBackground col col-12">
+                    <div class='headerBackground'>
+                        <a href="flats.html"><i class='material-icons' style='color: #FF385C; margin:15px; float:right; background-color: white'>home</i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="heading" id="welcome-headline">
+        <div>
+            <p></p>
+        </div>
+        <h1 id="welcome"><span>Welcome!</span></h1>
+        <p><span>Here you can search for any type of flats you want</span></p>
+    </div>
+
+    <div class="hero-wrep">
+    </div>
+
+    <div>
+        <p></p>
+    </div>
+
+    <div id="headerPost">
+        <form id="pForm">
+            <div class="main">
+                <div class="main">
+                    <h4><label><b>City</b></label></h4>
+                    <select id="cityCB" required>
+                        <option value="">Choose city</option>
+                        <option value="KfarSaba">kfar saba</option>
+                        <option value="Raanana">Raanana</option>
+                        <option value="HodHasharon">Hod Hasharon</option>
+                        <option value="Herzelya">Herzelya</option>
+                        <option value="PetachTikva">Petach Tikva</option>
+                    </select>
+                </div>
+                <div class="main">
+                    <h4><label><b>Address</b></label></h4>
+                    <input type="text" id="addressTB" pattern="^(?=.{1,31}$)([-'\w]+\s)*[-'\w]+" oninvalid="this.setCustomValidity('Address should be less then 30 characters')" oninput="this.setCustomValidity('')" required />
+                </div>
+                <div class="main">
+                    <h4><label><b>Number of rooms</b></label></h4>
+                    <input type="number" id="numberOfRoomsTB" pattern="\b([1-9]|10)\b" oninvalid="this.setCustomValidity('Number should be between 1-10')" oninput="this.setCustomValidity('')" required />
+                </div>
+                <div class="main">
+                    <h4><label><b>Price</b></label></h4>
+                    <input type="number" id="priceTB" required />
+                </div>
+                <div>
+                    <div class="main">
+                        <input id="postFlatBTN" type="submit" class="button" value="Post The Flat" />
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <section class="featured" id="featured">
+        <h1 class="heading">Featured flats</h1>
+        <div class="box-container" id="ph">
+        </div>
+    </section>
+
+    <div class="container">
+
+         <!--The Modal--> 
+        <div class="modal" id="myModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                     <!--Modal Header--> 
+                    <div class="modal-header">
+                        <br />
+                        <h4 class="heading"><span>LOGIN</span></h4>
+                        <button type="button" class="close" data-dismiss="modal" onclick="CloseModal()">&times;</button>
+                    </div>
+
+                     <!--Modal body--> 
+                    <div class="modal-body">
+                        <div id="ph4"></div>
+                    </div>
+
+                     <!--Modal footer--> 
+                    <div class="modal-footer">
+                        <div id="ph5"></div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>
